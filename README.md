@@ -1,10 +1,8 @@
-# Forecasting 2022 U.S. Unemployment Rate Based on Housing Supply Rate and Interest Rate Using Federal Reserve Economic Data 
+## Forecasting 2022 U.S. Unemployment Rate Based on Housing Supply Rate and Interest Rate Using Federal Reserve Economic Data 
 
-**Author:** *Ellen Wei, Robin Lee, Xuxin Zhang*
+*February 27, 2023*
 
-**Date:** *February 27, 2023*
-
-## 1 Introduction
+### 1 Introduction
 
 With the number of layoffs in the tech industry escalating throughout the United States following a nation-wide increase in interest rates, we have hypothesized that interest rate is definitely a significant factor that noticeably affects the unemployment rate—raising the question, what other circumstances influence employment? Thus, by applying time series analysis, we attempt to answer the following: *what are other potential factors that impact the unemployment rate?*
 
@@ -30,11 +28,11 @@ Plot 1: How does unemployment rate vary together with housing supply and interes
 
 From Plot 1, we can see that the unemployment rate has a similar trend compared to both federal funds effective rate and housing supply ratio. To conduct analysis in later parts of this project, we have extracted the last 12 data points as the testing data and used the remaining data points as the training data. That is to say, we use the data from 1980-01 to 2018-01 as the training data and that from `2018-02` to `2019-1` as the testing data.
 
-## 2 Components Feature Analysis
+### 2 Components Feature Analysis
 
 Because we want to see how new housing supply and interest rate will affect unemployment, we have chosen Unemployment Rate as our dependent variable. Based on the dyplot shown earlier (Plot 1), we can see that there is seasonality and no obvious trend in the unemployment data, as indicated by the green line.
 
-### 2.1 Decomposition for Unemployment Training Data
+#### 2.1 Decomposition for Unemployment Training Data
 
 That is to say, we know the seasonality does not increase with the trend. As a result, we can apply additive decomposition, instead of multiplicative decomposition, for our time series.
 
@@ -53,7 +51,7 @@ We first plot the additive decomposition of the training data (Plot 2). We see t
 
 Plot 2.1: Random Term of Additive Decomposition
 
-### 2.2 Seasonal Box Plot for Unemployment Training Data
+#### 2.2 Seasonal Box Plot for Unemployment Training Data
 
 A seasonal box plot is a graphical representation used to display the distribution of a dataset over time, specifically focusing on seasonal patterns. Each box plot within a seasonal box plot represents the distribution of the data for a particular time interval (e.g., each month of the year). The box itself represents the interquartile range (IQR), with the median marked by a line. Seasonal box plots are useful for visualizing seasonal patterns and identifying any variations or trends that occur within specific time intervals.
 
@@ -63,7 +61,7 @@ Plot 3: Seasonal boxplot for the unemployment data
 
 From the boxplot (Plot 3), we can see that the unemployment data does show certain seasonality. In particular, we can see that the unemployment rate drops from January to May, before increasing again in June. However, after this growth in June, the unemployment rate begins to drop again from July to December.
 
-## 3 Autocorrelation Feature Analysis
+### 3 Autocorrelation Feature Analysis
 
 Next, we plot the ACF and PACF graphs for the training data. The ACF (Autocorrelation Function) and PACF (Partial Autocorrelation Function) plots are graphical tools used in time series analysis to identify the autocorrelation structure of a time series dataset.
 
@@ -84,7 +82,7 @@ Plot 5: ACF plots for the AR(1) model with parameter 0.4
 For the regular part, it seems like an `ARMA(4, 2)` model. By looking at the ACF graph, the peak cuts off at lag 2 (`MA(2)`), and in the PACF, the peak cuts off at lag 4 — `AR(4)`. For the seasonal part, it looks like the `MA(3)` model.
 By comparing the raw time series plots and the ACF plots, we believe an autoregressive process with an order of 1 with a parameter of 0.4 might generate our dependent variables; this is because the ACF graphs are similar.
 
-## 4 Exponential Smoothing Modeling and Forecasting
+### 4 Exponential Smoothing Modeling and Forecasting
 
 Using the raw training dependent variable—Unemployment—we fit an appropriate exponential smoothing model and forecast. As such, we decide to use seasonal Holt-Winters exponential smoothing, which fits a time series with seasonality and trend. Furthermore, we implement additive decomposition, because the model’s seasonality does not increase with the trend.
 
@@ -149,7 +147,7 @@ Plot 6: Seasonal Exponential Smoothing for Unemployment Rate
 
 The fitted model (solid red line) appears to fit the actual values (black line) fairly well, and we can see an overall negative trend from 2010 onwards. This signifies that our fitted model is accurate, and that our forecast (dotted line) is most likely accurate as well.
 
-## 5 Polynomial Regression, Seasonal Effect, Forecasting
+### 5 Polynomial Regression, Seasonal Effect, Forecasting
 
 Polynomial regression is a type of regression analysis where the relationship between the independent variable x and the dependent variable y is modeled as an nth-degree polynomial function. Unlike simple linear regression, which fits a straight line to the data, polynomial regression can capture more complex relationships between variables by allowing for curves and bends. Higher-degree polynomials can capture more patterns but may also lead to overfitting.
 
@@ -196,13 +194,13 @@ $\hat{T}$ is the predicted trend values, $\hat{S}$ is the predicted seasonal val
 
 Polynomial regression can also be applied to time series data, where the relationship between the dependent variable (usually the observed values over time) and the independent variable (time itself) is modeled using a polynomial function. This approach can capture nonlinear trends in the time series data. However, we can see that polynomial regression tends to overfit the data.
 
-## 6 ARIMA Modeling and Forecasting
+### 6 ARIMA Modeling and Forecasting
 
 ARIMA (AutoRegressive Integrated Moving Average) is a popular and powerful time series analysis and forecasting method. It is a combination of autoregressive (AR), differencing (I), and moving average (MA) components, hence the name ARIMA.
 
 We have ultimately decided that we do not need to apply any pre-transformations, since we found that additive decomposition works—as indicated in Section 2. Because the variance in Unemployment Rate is stationary, no transformation is required to ensure the constant variance.
 
-### 6.1 Assessment of Mean Stationarity
+#### 6.1 Assessment of Mean Stationarity
 
 In time series analysis, stationarity is an important property where the statistical properties of a time series (such as mean, variance, and autocorrelation) remain constant over time. Mean stationarity specifically refers to the constancy of the mean of the time series over time.
 
@@ -214,7 +212,7 @@ As exemplified in Plot 9, there is seasonality and trend in the mean when we imp
 
 By seasonally differencing the regular differencing, we notice that the ACF has few significant spikes at the smaller lags before cutting off. Even though we identify a significant spike at lag = 1, we see that the lag quickly dies off. Therefore, we conclude that with the seasonal differencing of the regular differencing of the training data, we achieve mean stationarity.
 
-### 6.2 ARIMA Model Identification
+#### 6.2 ARIMA Model Identification
 
 For model selection, we break the ACF and PACF of seasonal difference of regular difference into regular and seasonal parts. From the ACF and PACF of regular and seasonal differencing (Plot 9), we see that the ACF cuts off at approximately lag 1, and the PACF cuts off at approximately lag 3. Because there is seasonality, we need to identify a model for both the stationarity at low lags and the stationarity at seasonal lags.
 
@@ -222,7 +220,7 @@ As we mentioned, the significant peak cuts off after the third spike in the PACF
 
 The model—in ARIMA notation ARIMA(p,d,q)(P,D,Q)[F]—is: **ARIMA(3,1,1)(1,1,1)[12]**
 
-### 6.3 ARIMA Fit and Diagnose Analysis (Ljung-Box Test)
+#### 6.3 ARIMA Fit and Diagnose Analysis (Ljung-Box Test)
 
 In order to fit and diagnose our identified model, we apply the Ljung-Box test using 50 lags—as seen in the ACF (Plot 9). Given the following hypotheses:
 
@@ -304,7 +302,7 @@ Table 7: Raw data, forecast from models, and RMSE
 
 We reject the null hypotheses in all cases, because the t-statistics are more than 2 standard errors away from the center. Thus, there is statistically evidence suggesting that the coefficients of the AR and MA models generating the data—labeled alpha—are not 0.
 
-### 6.4. ARIMA Forecasting
+#### 6.4. ARIMA Forecasting
 
 After confirming that the residuals are white noise, the model is stationary and invertible, and the model coefficients are significantly different from 0, we proceed to use the model we have selected in Section 6.2 to forecast the future values of the series. A stationary time series is one whose statistical properties—such as variance and autocorrelation—remain constant over time. An invertible model ensures that the estimated coefficients provide meaningful insights.
 
@@ -351,11 +349,11 @@ Plot 12: Histogram of ARIMA(3,1,1)(1,1,1)[12] Residuals
 
 We want to check that the residuals for our final model, ARIMA(3,1,1)(1,1,1)[12], are normally distributed; as such, we plot a histogram (Plot 12) to confirm that this is the case. Because the histogram appears to be normal, we are able to proceed with the forecast we have created.
 
-## 7 Multiple Regression with ARMA Residuals
+### 7 Multiple Regression with ARMA Residuals
 
 Multiple regression with ARMA (AutoRegressive Moving Average) residuals is a statistical modeling technique that combines elements of multiple linear regression and ARMA time series modeling. This approach is used when the residuals from a multiple regression model exhibit autocorrelation or other time series patterns that can be better captured by an ARMA model.
 
-### 7.1 ARMA Causal Model Fit
+#### 7.1 ARMA Causal Model Fit
 
 A causal model fit refers to the process of fitting a statistical model that attempts to establish causal relationships between variables. In a causal model, one variable (the independent or predictor variable) is hypothesized to directly influence another variable (the dependent or response variable), while controlling for other potential confounding variables.
 
@@ -408,11 +406,11 @@ The RMSE of the GLS model on the test data is **2.328397**.
 
 Plot 16: Plot of Unemployment Rate, GLS fitted values, and forecast
 
-## 8 Vector Autoregression
+### 8 Vector Autoregression
 
 Vector Autoregression (VAR) is a multivariate time series forecasting model used to analyze the dynamic relationships among multiple time series variables. Unlike traditional univariate time series models that focus on predicting a single variable, VAR models jointly model the behavior of multiple variables over time.
 
-### 8.1 CCF and Degree for Vector Autoregression
+#### 8.1 CCF and Degree for Vector Autoregression
 
 The cross-correlation function (CCF) is a statistical tool used to measure the relationship between two time series variables by calculating the correlation between their lagged values. It helps to identify the extent and direction of the linear relationship between two series, including any time lags in the relationship. In order to conduct CCF (cross-correlation function), we need to make sure the time series data we input are stationary. We first draw the ACF and PACF for both of our independent variables: Federal Reserve Effective Rate and Housing Supply Ratio.
 
@@ -514,7 +512,7 @@ This means that we need to fit a VAR(2) model between unemployment and federal r
 
 In Plot 21, we see that in both the upper right and lower left graph, lag 1 is significant, but the lower left graph has a more significant spike than the upper right graph, meaning unemployment is more “leading” than federal reserve rate.
 
-### 8.2 Constructing the Vector Autoregression Model
+#### 8.2 Constructing the Vector Autoregression Model
 
 In this section, we fit the VAR(6) and VAR(2) models:
 
@@ -582,7 +580,7 @@ By looking at the residuals of both our VAR(6) and VAR(2) models in Plot 22 and 
 
 Plot 23: ACF of Residuals for VAR(2)
 
-### 8.3 Impulse Response Functions for Vector Autoregression Model
+#### 8.3 Impulse Response Functions for Vector Autoregression Model
 
 In this section, we construct and plot the impulse response functions to see the effect and length of the effect of a shock to the system. It allows for the decomposition of the response of endogenous variables to a shock into orthogonal components
 
@@ -614,7 +612,7 @@ Orthogonal Impulse Response (OIR) analysis is a method used in econometrics and 
 
 Impulse Response Functions are tools for analyzing the dynamic behavior of multivariate time series data and understanding the responses of variables to shocks in the system.
 
-### 8.4 Forecasting using the Vector Autoregression Model
+#### 8.4 Forecasting using the Vector Autoregression Model
 
 After figuring out the VAR models, we can use them to make predictions. In particular, we are interested in how well the VAR(6) and VAR(2) models can predict the unemployment rate.In Plot 28 and Plot 29, we draw the prediction together with the confidence interval for the prediction for both VAR(6) and VAR(2).
 
@@ -628,7 +626,7 @@ If we calculate the RMSE, we have the RMSE for the VAR(6) model being 0.4184812,
 
 Plot 29: Forecast of Change in Unemployment with VAR(2) of Federal Reserve Rate
 
-## 9. Forecast Cross-Validation, Final Conclusion
+### 9. Forecast Cross-Validation, Final Conclusion
 
 In conclusion, we found in the time series that the dependent variable—unemployment rate—contains the seasonality that does not increase with the trend. These two features indicate that the seasonality of unemployment does not increase with the trend, allowing us to utilize additive decomposition rather than multiplicative decomposition. Hence, after plotting the additive decomposition outcomes, it is clear that the random term fluctuates around the value of 0—signifying that our data has constant variance.
 
